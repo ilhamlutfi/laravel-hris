@@ -7,16 +7,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Employee extends Model
+class Responsibility extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['team_id', 'role_id', 'name', 'email', 'gender', 'age', 'phone', 'photo', 'is_verified', 'verified_at'];
-
-    public function Team(): BelongsTo
-    {
-        return $this->belongsTo(Team::class);
-    }
+    protected $fillable = ['role_id', 'name'];
 
     public function Role(): BelongsTo
     {
