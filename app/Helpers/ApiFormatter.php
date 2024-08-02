@@ -3,7 +3,7 @@
 namespace App\Helpers;
 
 /**
- * Format api response.
+ * Format response.
  */
 class ApiFormatter
 {
@@ -24,11 +24,10 @@ class ApiFormatter
     /**
      * Give success response.
      */
-    public static function success($data = null, $message = null, $code = 200)
+    public static function success($data = null, $message = null)
     {
         self::$response['meta']['message'] = $message;
-        self::$response['meta']['code'] = $code;
-        self::$response['data'] = $data;
+        self::$response['result'] = $data;
 
         return response()->json(self::$response, self::$response['meta']['code']);
     }
@@ -36,12 +35,11 @@ class ApiFormatter
     /**
      * Give error response.
      */
-    public static function error($data = null, $message = null, $code = 400)
+    public static function error($message = null, $code = 400)
     {
         self::$response['meta']['status'] = 'error';
         self::$response['meta']['code'] = $code;
         self::$response['meta']['message'] = $message;
-        self::$response['data'] = $data;
 
         return response()->json(self::$response, self::$response['meta']['code']);
     }
