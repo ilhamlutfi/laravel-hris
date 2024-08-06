@@ -16,9 +16,10 @@ class RoleController extends Controller
         $id = $request->input('id');
         $name = $request->input('name');
         $limit = $request->input('limit', 10);
+        $with_responsibility = $request->input('with_responsibility');
 
         // init query
-        $roleQuery = Role::query();
+        $roleQuery = Role::query()->with('Responsibilities:id,role_id,name');
 
         if ($id) {
             // filter with id
@@ -37,6 +38,11 @@ class RoleController extends Controller
         // filter with name
         if ($name) {
             $roles->where('name', 'like', '%' . $name . '%');
+        }
+
+        // get with responsibility
+        if ($with_responsibility) {
+            $roles->with('Responsibilities');
         }
 
         return ApiFormatter::success($roles->paginate($limit), 'List Roles');
@@ -93,7 +99,7 @@ class RoleController extends Controller
 
         try {
             $role->delete();
-            
+
             return ApiFormatter::success($role, 'Role Deleted', 200);
         } catch (Exception $th) {
             return ApiFormatter::error($th->getMessage(), 500);
