@@ -11,10 +11,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResource('company', CompanyController::class);
 
+Route::post('login', [UserController::class, 'login']);
 Route::post('register', [UserController::class, 'register']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::post('login', [UserController::class, 'login']);
     Route::post('logout', [UserController::class, 'logout']);
     Route::get('user', [UserController::class, 'fetch']);
+
+    Route::get('company/{id}', [CompanyController::class, 'index']);
+    Route::apiResource('company', CompanyController::class);
 });

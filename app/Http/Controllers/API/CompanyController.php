@@ -4,8 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Helpers\ApiFormatter;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
@@ -18,20 +22,26 @@ class CompanyController extends Controller
         $name = $request->input('name');
         $limit = $request->input('limit', 10);
 
+        // relation by logged in users
+        $companyQuery = Company::with('Users:id,name,email')->whereHas('Users', function ($query) {
+            $query->where('user_id', auth()->user()->id);
+        });
+
         if ($id) {
-            $company = Company::with(['Users'])->find($id);
+            $company = $companyQuery->find($id);
 
             if ($company) {
-                return ApiFormatter::success($company);
+                return ApiFormatter::success($company, 'Company Found');
             }
 
-            return ApiFormatter::error('Company not found');
+            return ApiFormatter::error('Company not found', 404);
         }
 
-        $companies = Company::with(['Users']);
+        // get relation by logged in users
+        $companies = $companyQuery;
 
         if ($name) {
-            $companies->where('name', 'like', '%'. $name . '%');
+            $companies->where('name', 'like', '%' . $name . '%');
         }
 
         return ApiFormatter::success($companies->paginate($limit), 'List Companies');
@@ -40,9 +50,28 @@ class CompanyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CompanyRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        try {
+            if ($request->hasFile('logo')) {
+                $data['logo'] = $request->file('logo')->store('public/logos');
+            }
+
+            $company = Company::create($data);
+
+            // add user to company
+            $user = User::findOrFail(auth()->user()->id);
+            $user->Companies()->attach($company->id);
+
+            // load users at company
+            $company->load('Users:id,name,email');
+
+            return ApiFormatter::success($company, 'Company Created', 201);
+        } catch (Exception $th) {
+            return ApiFormatter::error($th->getMessage());
+        }
     }
 
     /**
@@ -56,9 +85,31 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CompanyRequest $request, string $id)
     {
-        //
+        $data = $request->validated();
+
+        $company = Company::find($id);
+
+        if (!$company) {
+            throw new Exception('Company not found');
+        }
+
+        try {
+            if ($request->hasFile('logo')) {
+                if ($company->logo) {
+                    Storage::delete($company->logo);
+                }
+
+                $data['logo'] = $request->file('logo')->store('public/logos');
+            }
+
+            $company->update($data);
+
+            return ApiFormatter::success($company, 'Company Updated', 200);
+        } catch (Exception $th) {
+            return ApiFormatter::error($th->getMessage());
+        }
     }
 
     /**
