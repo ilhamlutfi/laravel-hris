@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\CompanyController;
+use App\Http\Controllers\API\TeamController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,4 +21,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('company/{id}', [CompanyController::class, 'index']);
     Route::apiResource('company', CompanyController::class);
+
+    Route::get('team/{id}', [TeamController::class, 'index']);
+    Route::apiResource('team', TeamController::class);
 });
