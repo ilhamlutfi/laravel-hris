@@ -1,11 +1,13 @@
 <?php
 
-use App\Http\Controllers\API\CompanyController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\TeamController;
 use App\Http\Controllers\API\UserController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\CompanyController;
+use App\Http\Controllers\API\EmployeeController;
+use App\Http\Controllers\API\ResponsibilityController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -29,6 +31,14 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     ]);
 
     Route::apiResource('role', RoleController::class)->except([
+        'show'
+    ]);
+
+    Route::apiResource('responsibility', ResponsibilityController::class)->except([
+        'show'
+    ]);
+
+    Route::apiResource('employee', EmployeeController::class)->except([
         'show'
     ]);
 });
