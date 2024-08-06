@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\CompanyController;
+use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\TeamController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
@@ -19,9 +20,15 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('logout', [UserController::class, 'logout']);
     Route::get('user', [UserController::class, 'fetch']);
 
-    Route::get('company/{id}', [CompanyController::class, 'index']);
-    Route::apiResource('company', CompanyController::class);
+    Route::apiResource('company', CompanyController::class)->except([
+        'show'
+    ]);
 
-    Route::get('team/{id}', [TeamController::class, 'index']);
-    Route::apiResource('team', TeamController::class);
+    Route::apiResource('team', TeamController::class)->except([
+        'show'
+    ]);
+
+    Route::apiResource('role', RoleController::class)->except([
+        'show'
+    ]);
 });

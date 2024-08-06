@@ -57,7 +57,7 @@ class TeamController extends Controller
 
             $team = Team::create($data);
 
-            // load users at team
+            // load company at team
             $team->load('Company');
 
             return ApiFormatter::success($team, 'Team Created', 201);
