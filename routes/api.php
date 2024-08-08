@@ -19,8 +19,8 @@ Route::post('login', [UserController::class, 'login']);
 Route::post('register', [UserController::class, 'register']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::post('logout', [UserController::class, 'logout']);
     Route::get('user', [UserController::class, 'fetch']);
+    Route::post('logout', [UserController::class, 'logout']);
 
     Route::apiResource('company', CompanyController::class)->except([
         'show'

@@ -23,7 +23,7 @@ class UserController extends Controller
             // verified credentials
             $credentials = request(['email', 'password']);
             if (!auth()->attempt($credentials)) {
-                return ApiFormatter::error('Unauthorized', 401);
+                return ApiFormatter::error('Unauthorized Credentials', 401);
             }
 
             // get user by email
@@ -36,11 +36,15 @@ class UserController extends Controller
 
             // generate token
             $tokenResult = $user->createToken('authToken')->plainTextToken;
-            return ApiFormatter::success([
-                'access_token' => $tokenResult,
-                'token_type' => 'Bearer',
-                'user' => $user
-            ], 'Login Success');
+            // return ApiFormatter::success([
+            //     'token' => $tokenResult,
+            //     'token_type' => 'Bearer',
+            //     'user' => $user
+            // ], 'Login Success');
+
+            return response()->json([
+                'token' => $tokenResult,
+            ]);
         } catch (Exception $e) {
             return ApiFormatter::error($e->getMessage());
         }
@@ -68,7 +72,7 @@ class UserController extends Controller
 
             // return response
             return ApiFormatter::success([
-                'access_token' => $tokenResult,
+                'token' => $tokenResult,
                 'token_type' => 'Bearer',
                 'user' => $user
             ], 'Register Success');
